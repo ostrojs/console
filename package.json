@@ -1,0 +1,36 @@
+{
+  "name": "@ostro/console",
+  "version": "0.0.0-alpha.0",
+  "description": "give command for nodejs",
+  "engines": {
+    "node": ">= 12.0"
+  },
+  "main": "application.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@ostro/contracts": "0.0.0-alpha.0",
+    "@ostro/support": "0.0.0-alpha.0",
+    "commander": "^8.0.0",
+    "string-argv": "^0.3.1",
+    "lodash": "^4.17.21"
+
+  },
+  "keywords": [
+    "console",
+    "command",
+    "cli",
+    "nodejs command"
+  ],
+  "author": "amar",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ostrojs/console.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ostrojs/console/issues"
+  },
+  "homepage": "https://github.com/ostrojs/console#readme"
+}
