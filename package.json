@@ -1,27 +1,27 @@
 {
   "name": "@ostro/console",
   "version": "0.0.0-alpha.0",
-  "description": "give command for nodejs",
-  "engines": {
-    "node": ">= 12.0"
-  },
+  "description": "Command module for OstroJS",
   "main": "application.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "@ostro/contracts": "0.0.0-alpha.0",
-    "@ostro/support": "0.0.0-alpha.0",
+    "@ostro/contracts": "0.0.0-alpha",
+    "@ostro/support": "0.0.0-alpha",
     "commander": "^8.0.0",
     "string-argv": "^0.3.1",
     "lodash": "^4.17.21"
 
   },
+  "engines": {
+    "node": ">=12.0.0"
+  },
+  "engineStrict": true,
   "keywords": [
     "console",
     "command",
-    "cli",
-    "nodejs command"
+    "cli"
   ],
   "author": "amar",
   "license": "MIT",
