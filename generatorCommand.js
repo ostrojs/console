@@ -3,7 +3,7 @@ require('@ostro/support/helpers')
 
 class GeneratorCommand extends Command {
 
-    $files;
+    $file;
 
     $type;
 
