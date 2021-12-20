@@ -8,6 +8,10 @@ class CallsCommands {
         return this.runCommand($command, $arguments, this.output);
     }
 
+    call(){
+        return this.callCommand(...arguments)
+    }
+
     callSilent($command, $arguments = []) {
         return this.runCommand($command, $arguments, new NullOutput);
     }
