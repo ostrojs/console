@@ -46,11 +46,9 @@ class GeneratorCommand extends Command {
         'yield',
     ];
 
-    get $arguments() {
-        return [
-            this.createArgument('name', 'The name of the migration').required()
-        ]
-    }
+    $arguments = [
+        this.createArgument('name', 'The name of the migration').required()
+    ];
 
     constructor($files) {
         super()
@@ -78,12 +76,12 @@ class GeneratorCommand extends Command {
         }
 
         await this.makeDirectory($path);
-        let $stub  = await this.buildClass($name)
-        if($stub){
-            await this.$file.put($path,$stub.toString() );
+        let $stub = await this.buildClass($name)
+        if ($stub) {
+            await this.$file.put($path, $stub.toString());
             this.info(this.$type + ' created successfully.');
-        }else{
-            this.error('Unable to create '+this.$type );
+        } else {
+            this.error('Unable to create ' + this.$type);
 
         }
 
@@ -115,7 +113,7 @@ class GeneratorCommand extends Command {
         }
 
         return isDirectory(app_path('models')) ?
-            app_path('models/'+$model) :
+            app_path('models/' + $model) :
             path.join($rootNamespace, $model);
     }
 
@@ -124,16 +122,16 @@ class GeneratorCommand extends Command {
     }
 
     getFileName($name) {
-        $name= path.normalize($name)
+        $name = path.normalize($name)
         let lastSlash = $name.lastIndexOf(path.sep)
-        lastSlash  = lastSlash > -1 ? lastSlash : 0
-        return String.trim($name.slice(lastSlash,$name.length),path.sep)
+        lastSlash = lastSlash > -1 ? lastSlash : 0
+        return String.trim($name.slice(lastSlash, $name.length), path.sep)
     }
 
     getPath($name) {
         let $class = this.getFileName($name).camelCase()
-        let namespace = this.getNamespace($name).replace(this.rootNamespace(),'')
-        return this.rootNamespace(path.join(namespace,$class+".js"))
+        let namespace = this.getNamespace($name).replace(this.rootNamespace(), '')
+        return this.rootNamespace(path.join(namespace, $class + ".js"))
     }
 
     async makeDirectory($path) {
@@ -160,21 +158,27 @@ class GeneratorCommand extends Command {
 
     replaceNamespace($stub, $name) {
         let $searches = {
-            'DummyNamespace':this.getNamespace($name), 'DummyRootNamespace':this.getNamespace($name), 'NamespacedDummyUserModel':this.getNamespace($name),
-            '{{ namespace }}':this.rootNamespace(), '{{ rootNamespace }}':this.rootNamespace(), '{{ namespacedUserModel }}':this.rootNamespace(),
-            '{{namespace}}':this.userProviderModel(), '{{rootNamespace}}':this.userProviderModel(), '{{namespacedUserModel}}':this.userProviderModel(),
+            'DummyNamespace': this.getNamespace($name),
+            'DummyRootNamespace': this.getNamespace($name),
+            'NamespacedDummyUserModel': this.getNamespace($name),
+            '{{ namespace }}': this.rootNamespace(),
+            '{{ rootNamespace }}': this.rootNamespace(),
+            '{{ namespacedUserModel }}': this.rootNamespace(),
+            '{{namespace}}': this.userProviderModel(),
+            '{{rootNamespace}}': this.userProviderModel(),
+            '{{namespacedUserModel}}': this.userProviderModel(),
         };
-            $stub = String.replaceAllArray($stub,
-                Object.keys($searches), Object.values($searches)
+        $stub = String.replaceAllArray($stub,
+            Object.keys($searches), Object.values($searches)
 
-            );
+        );
 
         return $stub;
     }
 
     getNamespace($name) {
-        $name  = path.normalize($name)
-        return rtrim($name.slice(0,$name.lastIndexOf(path.sep)),path.sep);
+        $name = path.normalize($name)
+        return rtrim($name.slice(0, $name.lastIndexOf(path.sep)), path.sep);
     }
 
     replaceClass($stub, $name) {
@@ -211,7 +215,7 @@ class GeneratorCommand extends Command {
     viewPath($path = '') {
         $views = this.$app['config']['view.paths'][0] || resource_path('views');
 
-        return $views + ($path ? pat.sep+$path : $path);
+        return $views + ($path ? pat.sep + $path : $path);
     }
 
 }
