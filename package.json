@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "@ostro/support": "^1.0.2",
+    "@ostro/support": "^1.0.7",
     "@ostro/contracts": "^1.0.0",
     "commander": "^8.0.0",
     "string-argv": "^0.3.1",
