@@ -95,7 +95,7 @@ class GeneratorCommand extends Command {
             return $name;
         }
         return this.qualifyClass(
-            path.join(this.getDefaultNamespace(String.trim($rootNamespace, path.sep)), $name)
+            path.join(this.getDefaultNamespace(String.trimEnd($rootNamespace, path.sep)), $name)
         );
     }
 
