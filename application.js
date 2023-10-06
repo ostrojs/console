@@ -3,8 +3,8 @@ const commander = require('commander');
 const InputHandler = require('./inputHandler')
 const OutputHandler = require('./outputHandler')
 const Command = require('./command')
-const { debounce } = require('lodash')
 const CommandNotFoundException = require('./exceptions/commandNotFoundException')
+
 class Application {
 
     static $bootstrappers = [];
@@ -13,40 +13,61 @@ class Application {
     constructor($app) {
         this.$app = $app;
         this.setAutoExit(1);
+        commander.exitOverride(()=>{});
+        commander.showSuggestionAfterError(true);
+
         this.bootstrap();
     }
 
     setAutoExit(status) {
-        this.$exitCode = status
+        process.exitCode = status
     }
 
     getAutoExit() {
-        return this.$exitCode
+        return process.exitCode
     }
 
-    async run($input = [], $output = null) {
-
+    run($input = []) {
         return commander.parseAsync($input, {
             from: 'user'
         })
+
     }
 
-    call($command, $parameters = {}, $outputBuffer = null) {
-        $command = this.parseCommand($command, $parameters);
-        if (! this.has($command)) {
-            throw new CommandNotFoundException(`The command ${$command} does not exist.`);
+    call($command, $arguments = []) {
+        $command = this.parseCommand($command);
+        $command = $command.slice(0, 1);
+        const commandArguments = $command.slice(1, $command.length).reduce((acc, item) => {
+            const [key, value] = item.split('=');
+            acc[key] = value ? value.replace(/["']/g, '') : true;
+            return acc;
+        }, {});
+        if (Array.isArray($arguments)) {
+            $arguments = $arguments.reduce((acc, item) => {
+                const [key, value] = item.split('=');
+                acc[key] = value ? value.replace(/["']/g, '') : true;
+                return acc;
+            }, {});
         }
 
+        $arguments = Object.assign($arguments, commandArguments);
+        if (!this.has($command)) {
+            throw new CommandNotFoundException(`The command ${$command} does not exist.`);
+        }
         return this.run(
-            $command, $outputBuffer
+            $command.concat(this.createInputFromArguments($arguments))
         );
+
+    }
+    createInputFromArguments($arguments) {
+        return Object.entries($arguments).map(([key, value]) => (value === true ? key : `${key}=${value}`));
     }
 
-    callCommand(){
+    callCommand() {
         return this.call(...arguments)
     }
 
-    has($command){
+    has($command) {
         return this.$commands.includes($command[0])
     }
 
@@ -76,7 +97,7 @@ class Application {
                 this.resolve($command);
             }
         } else if (typeof $commands == 'object') {
-            for (let command in $commands) {
+            for (let $command in $commands) {
                 this.resolve($command);
             }
         } else {
@@ -95,7 +116,7 @@ class Application {
     }
 
     add(command) {
-        if( command instanceof Command != true){
+        if (command instanceof Command != true) {
             throw new Error(`Instance of [@ostro/console/command] was not available on [${command.constructor.name}]`)
         }
         this.$commands.push(command.$signature)
@@ -114,11 +135,10 @@ class Application {
         }
         command.setApp(this.$app)
         command.setConsole(this)
-        cmd.action(function(arg) {
+        cmd.action(function (arg) {
             let obj = this.args[0]
             let args = {}
             let opts = this.opts()
-
             if (typeof obj == 'object') {
                 for (let key in obj) {
                     let value = obj[key]
