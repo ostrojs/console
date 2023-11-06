@@ -1,6 +1,6 @@
 {
   "name": "@ostro/console",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Command module for OstroJS",
   "main": "application.js",
   "scripts": {
