@@ -4,6 +4,7 @@ const InputHandler = require('./inputHandler')
 const OutputHandler = require('./outputHandler')
 const Command = require('./command')
 const CommandNotFoundException = require('./exceptions/commandNotFoundException')
+const lodash = require("lodash")
 
 class Application {
 
@@ -13,7 +14,7 @@ class Application {
     constructor($app) {
         this.$app = $app;
         this.setAutoExit(1);
-        commander.exitOverride(()=>{});
+        commander.exitOverride();
         commander.showSuggestionAfterError(true);
 
         this.bootstrap();
@@ -37,30 +38,38 @@ class Application {
     call($command, $arguments = []) {
         $command = this.parseCommand($command);
         $command = $command.slice(0, 1);
-        const commandArguments = $command.slice(1, $command.length).reduce((acc, item) => {
-            const [key, value] = item.split('=');
-            acc[key] = value ? value.replace(/["']/g, '') : true;
-            return acc;
-        }, {});
+        const commandArguments = $command.slice(1, $command.length)
         if (Array.isArray($arguments)) {
-            $arguments = $arguments.reduce((acc, item) => {
-                const [key, value] = item.split('=');
-                acc[key] = value ? value.replace(/["']/g, '') : true;
-                return acc;
-            }, {});
+            $arguments = $arguments.concat(commandArguments);
         }
-
-        $arguments = Object.assign($arguments, commandArguments);
         if (!this.has($command)) {
             throw new CommandNotFoundException(`The command ${$command} does not exist.`);
         }
         return this.run(
-            $command.concat(this.createInputFromArguments($arguments))
+            $command.concat(commandArguments.concat(lodash.flatten(this.createInputFromArguments($arguments))))
         );
 
     }
     createInputFromArguments($arguments) {
-        return Object.entries($arguments).map(([key, value]) => (value === true ? key : `${key}=${value}`));
+        if (Array.isArray($arguments)) {
+            return $arguments.map(arg => this.createInputFromArguments(arg))
+        }
+
+        if (typeof $arguments === 'object') {
+            return Object.entries($arguments).map(([key, value]) => {
+                if (value === true) {
+                    return key;
+                } else {
+                    if (key.startsWith('-')) {
+                        return `${key}=${value}`;
+                    } else {
+                        return { [key]: value }
+
+                    }
+                }
+            });
+        }
+        return $arguments
     }
 
     callCommand() {
@@ -115,48 +124,63 @@ class Application {
         return this.$app;
     }
 
+    parseArgument(arg) {
+        if (Array.isArray(arg)) {
+            const [key, value] = arg;
+            return { key, value };
+        }
+        else if (typeof arg === 'object') {
+            const [key, value] = Object.entries(arg).pop();
+            return { key, value };
+        } else if (typeof arg === 'string') {
+            return {
+                value: arg
+            }
+        }
+    }
+
     add(command) {
         if (command instanceof Command != true) {
             throw new Error(`Instance of [@ostro/console/command] was not available on [${command.constructor.name}]`)
         }
-        this.$commands.push(command.$signature)
-        let options = command.$options || []
-        let commandArguments = command.$arguments || []
-        let cmd = commander.command(command.$signature)
+        const self = this;
+        this.$commands.push(command.$signature);
+        let options = command.$options || [];
+        let commandArguments = command.$arguments || [];
+        let cmd = commander.command(command.$signature);
 
-        cmd.description(command.$description)
+        cmd.description(command.$description);
 
         for (let option of options) {
-            cmd.addOption(option.$handler)
+            cmd.addOption(option.$handler);
         }
 
         for (let argument of commandArguments) {
-            cmd.addArgument(argument.$handler)
+            cmd.addArgument(argument.$handler);
         }
-        command.setApp(this.$app)
-        command.setConsole(this)
+        command.setApp(this.$app);
+        command.setConsole(this);
         cmd.action(function (arg) {
-            let obj = this.args[0]
-            let args = {}
-            let opts = this.opts()
-            if (typeof obj == 'object') {
-                for (let key in obj) {
-                    let value = obj[key]
-                    if (key.startsWith('-')) {
-                        opts[key.replace('--', '')] = value
-                    } else {
-                        args[key] = value
+            const processedArgs = this.processedArgs.filter(v => v);
+            let args = {};
+            let opts = this.opts();
+
+            processedArgs.forEach((arg, i) => {
+                const { key, value } = self.parseArgument(arg);
+                const cmdArg = this._args.find(arg => arg._name == key);
+                if (key && key == cmdArg?._name) {
+                    args[key] = value;
+                } else {
+                    if (!key) {
+                        args[cmdArg?._name || this._args[i]?._name] = processedArgs[i] || null;
                     }
                 }
-            } else {
-                this._args.map((arg, i) => {
-                    return args[arg._name] = this.processedArgs[i]
-                })
-            }
+            });
 
-            let newCommand = Object.create(command)
-            command.input = new InputHandler(args, opts)
-            command.output = new OutputHandler()
+
+            let newCommand = Object.create(command);
+            command.input = new InputHandler(args, opts);
+            command.output = new OutputHandler();
             return newCommand.handle()
 
         })
