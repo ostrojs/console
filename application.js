@@ -14,7 +14,7 @@ class Application {
     constructor($app) {
         this.$app = $app;
         this.setAutoExit(1);
-        commander.exitOverride();
+        commander.exitOverride(()=>{});
         commander.showSuggestionAfterError(true);
 
         this.bootstrap();
