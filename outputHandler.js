@@ -1,14 +1,10 @@
 const OutputFormatter = require('./outputFormatter')
 const OutputInterface = require('./outputInterface')
-var readline = require('readline').createInterface({
-    input: process.stdin,
-    output: process.stdout
-});;
 
 class OutputHandler {
 
     $verbosity;
-    
+
     $formatter;
 
     constructor($verbosity = OutputInterface.VERBOSITY_NORMAL, $decorated = true, $formatter = null) {
@@ -116,7 +112,12 @@ class OutputHandler {
 
     question($question) {
         return new Promise((resolve, reject) => {
-            readline.question($question, function(answer) {
+            const readline = require('readline').createInterface({
+                input: process.stdin,
+                output: process.stdout
+            });
+            readline.question($question, function (answer) {
+                readline.close();
                 resolve(answer)
             })
         })
