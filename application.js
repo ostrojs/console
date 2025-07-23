@@ -13,7 +13,7 @@ class Application {
 
     constructor($app) {
         this.$app = $app;
-        this.setAutoExit(1);
+        this.setAutoExit(0);
         commander.exitOverride(()=>{});
         commander.showSuggestionAfterError(true);
 
