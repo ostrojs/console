@@ -1,36 +1,56 @@
 {
-  "name": "@ostro/console",
-  "version": "1.0.7",
-  "description": "Command module for OstroJS",
-  "main": "application.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "dependencies": {
-    "@ostro/support": "^1.2.1",
-    "@ostro/contracts": "^1.0.4",
-    "commander": "^8.0.0",
-    "string-argv": "^0.3.1",
-    "lodash": "^4.17.21"
-
-  },
-  "engines": {
-    "node": ">=12.0.0"
-  },
-  "engineStrict": true,
-  "keywords": [
-    "console",
-    "command",
-    "cli"
-  ],
-  "author": "amar",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/ostrojs/console.git"
-  },
-  "bugs": {
-    "url": "https://github.com/ostrojs/console/issues"
-  },
-  "homepage": "https://github.com/ostrojs/console#readme"
+    "name": "@ostro/console",
+    "version": "2.0.0-alpha.1",
+    "description": "Command module for OstroJS",
+    "main": "build/application.js",
+    "types": "build/application.d.ts",
+    "files": [
+        "build"
+    ],
+    "exports": {
+        ".": {
+            "types": "./build/application.d.ts",
+            "default": "./build/application.js"
+        },
+        "./*": {
+            "types": "./build/*.d.ts",
+            "default": "./build/*.js"
+        }
+    },
+    "scripts": {
+        "build": "npx tsc -p tsconfig.build.json && node scripts/build.js",
+        "prepublishOnly": "npm run build",
+        "test": "npx c8 npx jest",
+        "clean": "rm -rf build coverage"
+    },
+    "dependencies": {
+        "@ostro/contracts": "^2.0.0-alpha.1",
+        "@ostro/support": "^2.0.0-alpha.1",
+        "commander": "^8.3.0",
+        "lodash": "^4.17.21",
+        "string-argv": "^0.3.2"
+    },
+    "engines": {
+        "node": ">=18.0.0"
+    },
+    "engineStrict": true,
+    "keywords": [
+        "console",
+        "command",
+        "cli"
+    ],
+    "author": "amar",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/ostrojs/console.git"
+    },
+    "bugs": {
+        "url": "https://github.com/ostrojs/console/issues"
+    },
+    "homepage": "https://github.com/ostrojs/console#readme",
+    "devDependencies": {
+        "@types/node": "^22.20.5",
+        "typescript": "^5.8.0"
+    }
 }

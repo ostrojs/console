@@ -1,41 +1,70 @@
-var { parseArgsStringToArgv } = require('string-argv');
-const commander = require('commander');
-const InputHandler = require('./inputHandler')
-const OutputHandler = require('./outputHandler')
-const Command = require('./command')
-const CommandNotFoundException = require('./exceptions/commandNotFoundException')
-const lodash = require("lodash")
+import { parseArgsStringToArgv } from 'string-argv';
+import commander from 'commander';
+import InputHandler from './inputHandler';
+import OutputHandler from './outputHandler';
+import Command from './command';
+import CommandNotFoundException from './exceptions/commandNotFoundException';
+import lodash from 'lodash';
 
+/**
+ * Class Application.
+ */
 class Application {
 
-    static $bootstrappers = [];
-    $commands = [];
+    static $bootstrappers: any[] = [];
+    public $commands: any[] = [];
+    public $app: any;
+    public getCommand: any;
 
-    constructor($app) {
+    /**
+     * Create a new instance.
+     * @param {*} $app
+     */
+    constructor($app?: any) {
         this.$app = $app;
         this.setAutoExit(0);
-        commander.exitOverride(()=>{});
-        commander.showSuggestionAfterError(true);
+        (commander as any).exitOverride(()=>{});
+        (commander as any).showSuggestionAfterError(true);
 
         this.bootstrap();
     }
 
-    setAutoExit(status) {
+    /**
+     * setAutoExit method.
+     * @param {*} status
+     * @returns {any}
+     */
+    public setAutoExit(status: any) {
         process.exitCode = status
     }
 
-    getAutoExit() {
+    /**
+     * getAutoExit method.
+     * @returns {any}
+     */
+    public getAutoExit() {
         return process.exitCode
     }
 
-    run($input = []) {
-        return commander.parseAsync($input, {
+    /**
+     * run method.
+     * @param {*} $input
+     * @returns {any}
+     */
+    public run($input: any[] = []) {
+        return (commander as any).parseAsync($input, {
             from: 'user'
         })
 
     }
 
-    call($command, $arguments = []) {
+    /**
+     * call method.
+     * @param {*} $command
+     * @param {*} $arguments
+     * @returns {any}
+     */
+    public call($command: any, $arguments: any[] = []) {
         $command = this.parseCommand($command);
         $command = $command.slice(0, 1);
         const commandArguments = $command.slice(1, $command.length)
@@ -50,7 +79,12 @@ class Application {
         );
 
     }
-    createInputFromArguments($arguments) {
+    /**
+     * createInputFromArguments method.
+     * @param {*} $arguments
+     * @returns {any}
+     */
+    public createInputFromArguments($arguments: any) {
         if (Array.isArray($arguments)) {
             return $arguments.map(arg => this.createInputFromArguments(arg))
         }
@@ -72,34 +106,67 @@ class Application {
         return $arguments
     }
 
-    callCommand() {
-        return this.call(...arguments)
+    /**
+     * callCommand method.
+     * @returns {any}
+     */
+    public callCommand(...args: any[]) {
+        return (this.call as any)(...args)
     }
 
-    has($command) {
+    /**
+     * has method.
+     * @param {*} $command
+     * @returns {any}
+     */
+    public has($command: any) {
         return this.$commands.includes($command[0])
     }
 
-    getCommandName($input) {
+    /**
+     * getCommandName method.
+     * @param {*} $input
+     * @returns {any}
+     */
+    public getCommandName($input: any) {
         let $command = this.getCommand($input)._
         return $command.length ? $command[0] : ''
     }
 
-    bootstrap() {
+    /**
+     * bootstrap method.
+     * @returns {any}
+     */
+    public bootstrap() {
         for (let $bootstrapper of Application.$bootstrappers) {
             $bootstrapper(this);
         }
     }
 
-    parseCommand($command) {
+    /**
+     * parseCommand method.
+     * @param {*} $command
+     * @returns {any}
+     */
+    public parseCommand($command: any) {
         return parseArgsStringToArgv($command)
     }
 
-    resolve($command) {
+    /**
+     * resolve method.
+     * @param {*} $command
+     * @returns {any}
+     */
+    public resolve($command: any) {
         return this.add(this.$app.make($command));
     }
 
-    resolveCommands($commands) {
+    /**
+     * resolveCommands method.
+     * @param {*} $commands
+     * @returns {any}
+     */
+    public resolveCommands($commands: any) {
 
         if (Array.isArray($commands)) {
             for (let $command of $commands) {
@@ -116,15 +183,30 @@ class Application {
         return this;
     }
 
-    static addBootstraper(callback) {
+    /**
+     * addBootstraper method.
+     * @static
+     * @param {*} callback
+     * @returns {any}
+     */
+    static addBootstraper(callback: Function) {
         this.$bootstrappers.push(callback)
     }
 
-    getApp() {
+    /**
+     * getApp method.
+     * @returns {any}
+     */
+    public getApp() {
         return this.$app;
     }
 
-    parseArgument(arg) {
+    /**
+     * parseArgument method.
+     * @param {*} arg
+     * @returns {any}
+     */
+    public parseArgument(arg: any) {
         if (Array.isArray(arg)) {
             const [key, value] = arg;
             return { key, value };
@@ -139,15 +221,20 @@ class Application {
         }
     }
 
-    add(command) {
-        if (command instanceof Command != true) {
-            throw new Error(`Instance of [@ostro/console/command] was not available on [${command.constructor.name}]`)
+    /**
+     * add method.
+     * @param {*} command
+     * @returns {any}
+     */
+    public add(command: any) {
+        if (!command || (command instanceof Command != true && typeof command.$signature !== 'string' && typeof command.$signature !== 'function')) {
+            throw new Error(`Instance of [@ostro/console/command] was not available on [${command?.constructor?.name}]`)
         }
         const self = this;
         this.$commands.push(command.$signature);
         let options = command.$options || [];
         let commandArguments = command.$arguments || [];
-        let cmd = commander.command(command.$signature);
+        let cmd = (commander as any).command(command.$signature);
 
         cmd.description(command.$description);
 
@@ -187,4 +274,4 @@ class Application {
     }
 }
 
-module.exports = Application
+export default Application;
