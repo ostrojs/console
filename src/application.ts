@@ -266,10 +266,9 @@ class Application {
 
 
             let newCommand = Object.create(command);
-            command.input = new InputHandler(args, opts);
-            command.output = new OutputHandler();
+            newCommand.input = new InputHandler(args, opts);
+            newCommand.output = new OutputHandler();
             return newCommand.handle()
-
         })
     }
 }
