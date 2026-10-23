@@ -1,5 +1,6 @@
 import { parseArgsStringToArgv } from 'string-argv';
 import commander from 'commander';
+const program: any = (commander as any)?.program || (commander as any)?.default?.program || (commander as any)?.default || commander;
 import InputHandler from './inputHandler';
 import OutputHandler from './outputHandler';
 import Command from './command';
@@ -23,8 +24,8 @@ class Application {
     constructor($app?: any) {
         this.$app = $app;
         this.setAutoExit(0);
-        (commander as any).exitOverride(()=>{});
-        (commander as any).showSuggestionAfterError(true);
+        program.exitOverride(()=>{});
+        program.showSuggestionAfterError(true);
 
         this.bootstrap();
     }
@@ -52,7 +53,7 @@ class Application {
      * @returns {any}
      */
     public run($input: any[] = []) {
-        return (commander as any).parseAsync($input, {
+        return program.parseAsync($input, {
             from: 'user'
         })
 
@@ -234,7 +235,7 @@ class Application {
         this.$commands.push(command.$signature);
         let options = command.$options || [];
         let commandArguments = command.$arguments || [];
-        let cmd = (commander as any).command(command.$signature);
+        let cmd = program.command(command.$signature);
 
         cmd.description(command.$description);
 
