@@ -1,3 +1,4 @@
+import { describe, test, expect } from "@jest/globals";
 const _Argument = require('../src/argument');
 const Argument = _Argument.default || _Argument;
 const _Option = require('../src/option');

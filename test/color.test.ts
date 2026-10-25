@@ -1,3 +1,4 @@
+import { describe, test, expect } from "@jest/globals";
 const _Color = require('../src/color');
 const Color = _Color.default || _Color;
 

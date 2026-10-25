@@ -1,3 +1,4 @@
+import { describe, test, expect } from "@jest/globals";
 const _OutputFormatterStyle = require('../src/outputFormatterStyle');
 const OutputFormatterStyle = _OutputFormatterStyle.default || _OutputFormatterStyle;
 const _OutputFormatterStyleStack = require('../src/outputFormatterStyleStack');

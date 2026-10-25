@@ -1,6 +1,5 @@
 import { parseArgsStringToArgv } from 'string-argv';
-import commander from 'commander';
-const program: any = (commander as any)?.program || (commander as any)?.default?.program || (commander as any)?.default || commander;
+import { program } from 'commander';
 import InputHandler from './inputHandler';
 import OutputHandler from './outputHandler';
 import Command from './command';
@@ -24,7 +23,7 @@ class Application {
     constructor($app?: any) {
         this.$app = $app;
         this.setAutoExit(0);
-        program.exitOverride(()=>{});
+        program.exitOverride(() => { });
         program.showSuggestionAfterError(true);
 
         this.bootstrap();
@@ -112,7 +111,7 @@ class Application {
      * @returns {any}
      */
     public callCommand(...args: any[]) {
-        return (this.call as any)(...args)
+        return (this.call as (...a: unknown[]) => unknown)(...args)
     }
 
     /**

@@ -19,7 +19,7 @@ class HasParameters {
             if (typeof InputArgument !== 'undefined' && $arguments instanceof InputArgument) {
                 this.getDefinition().addArgument($arguments);
             } else {
-                this.addArgument(...Object.values($arguments as any));
+                this.addArgument(...Object.values($arguments as Record<string, unknown>));
             }
         }
 
@@ -27,7 +27,7 @@ class HasParameters {
             if (typeof InputOption !== 'undefined' && $options instanceof InputOption) {
                 this.getDefinition().addOption($options);
             } else {
-                this.addOption(...Object.values($options as any));
+                this.addOption(...Object.values($options as Record<string, unknown>));
             }
         }
     }
