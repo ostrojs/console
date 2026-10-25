@@ -1,4 +1,4 @@
-import readline from 'readline';
+import readline from 'node:readline';
 import OutputFormatter from './outputFormatter';
 import OutputInterface from './outputInterface';
 
