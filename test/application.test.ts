@@ -1,3 +1,4 @@
+import { describe, test, expect } from "@jest/globals";
 const _Application = require('../src/application');
 const Application = _Application.default || _Application;
 const _Command = require('../src/command');

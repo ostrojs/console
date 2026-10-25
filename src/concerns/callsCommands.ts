@@ -3,7 +3,10 @@
  */
 class CallsCommands {
     public declare output: any;
-    public declare getConsole: any;
+
+    public getConsole(): any {
+        return null;
+    }
 
     /**
      * callCommand method.
@@ -20,7 +23,7 @@ class CallsCommands {
      * @returns {any}
      */
     public call(...args: any[]) {
-        return (this.callCommand as any)(...args)
+        return (this.callCommand as (...a: unknown[]) => unknown)(...args)
     }
 
     /**

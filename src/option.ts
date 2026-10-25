@@ -42,7 +42,7 @@ class Option {
      * @returns The option instance.
      */
     public choices(values: readonly string[]): this {
-        this.$handler.choices(values as any);
+        this.$handler.choices(values as string[]);
         return this;
     }
 

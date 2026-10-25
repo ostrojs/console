@@ -22,7 +22,7 @@ class Argument {
      * @returns The argument instance.
      */
     public choices(values: readonly string[]): this {
-        this.$handler.choices(values as any);
+        this.$handler.choices(values as string[]);
         return this;
     }
 

@@ -1,7 +1,7 @@
 import Command from './command';
 import { rtrim, trim, ltrim } from '@ostro/support/function';
 import * as StringHelper from '@ostro/support/string';
-import path, { dirname } from 'path';
+import path, { dirname } from 'node:path';
 
 declare const isDirectory: any;
 declare const app_path: any;
@@ -184,11 +184,29 @@ class GeneratorCommand extends Command {
      * @returns {boolean}
      */
     public isTypeScript(): boolean {
-        if (!this.$app || typeof this.$app.basePath !== 'function') {
+        if (!this.$app) {
             return false;
         }
         try {
-            const fs = require('fs');
+            if (this.$app['config']) {
+                const configVal = typeof this.$app['config'].get === 'function' ?
+                    this.$app['config'].get('app.typescript') :
+                    this.$app['config']['app.typescript'];
+                if (typeof configVal === 'boolean') {
+                    return configVal;
+                }
+            }
+        } catch (_) {}
+
+        if (typeof super.isTypeScript === 'function') {
+            return super.isTypeScript();
+        }
+
+        if (typeof this.$app.basePath !== 'function') {
+            return false;
+        }
+        try {
+            const fs = require('node:fs');
             return fs.existsSync(this.$app.basePath('tsconfig.json')) ||
                 fs.existsSync(this.$app.basePath('tsconfig.build.json')) ||
                 fs.existsSync(this.$app.basePath('app.ts'));

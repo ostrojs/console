@@ -44,19 +44,52 @@ class Command extends implement(CommandContracts, Interaction, CallCommands, Has
     }
 
     /**
+     * Determine if the application is using TypeScript.
+     *
+     * @returns {boolean}
+     */
+    public isTypeScript(): boolean {
+        if (!this.$app) {
+            return false;
+        }
+        try {
+            if (this.$app['config']) {
+                const configVal = typeof this.$app['config'].get === 'function' ?
+                    this.$app['config'].get('app.typescript') :
+                    this.$app['config']['app.typescript'];
+                if (typeof configVal === 'boolean') {
+                    return configVal;
+                }
+            }
+        } catch (_) {}
+
+        if (typeof this.$app.basePath !== 'function') {
+            return false;
+        }
+        try {
+            const fs = require('node:fs');
+            return fs.existsSync(this.$app.basePath('tsconfig.json')) ||
+                fs.existsSync(this.$app.basePath('tsconfig.build.json')) ||
+                fs.existsSync(this.$app.basePath('app.ts'));
+        } catch {
+            return false;
+        }
+    }
+
+    /**
      * createArgument method.
      * @returns {any}
      */
-    public createArgument(...args: any[]) {
-        return new (Argument as any)(...args)
+    public createArgument(name: string, description?: string) {
+        return new Argument(name, description);
     }
 
     /**
      * createOption method.
      * @returns {any}
      */
-    public createOption(...args: any[]) {
-        return new (Option as any)(...args)
+    public createOption(flags: string, description?: string) {
+        return new Option(flags, description);
     }
 
     /**

@@ -1,5 +1,5 @@
 import { parseArgsStringToArgv } from 'string-argv';
-import commander from 'commander';
+import { program } from 'commander';
 import InputHandler from './inputHandler';
 import OutputHandler from './outputHandler';
 import Command from './command';
@@ -23,8 +23,8 @@ class Application {
     constructor($app?: any) {
         this.$app = $app;
         this.setAutoExit(0);
-        (commander as any).exitOverride(()=>{});
-        (commander as any).showSuggestionAfterError(true);
+        program.exitOverride(() => { });
+        program.showSuggestionAfterError(true);
 
         this.bootstrap();
     }
@@ -52,7 +52,7 @@ class Application {
      * @returns {any}
      */
     public run($input: any[] = []) {
-        return (commander as any).parseAsync($input, {
+        return program.parseAsync($input, {
             from: 'user'
         })
 
@@ -111,7 +111,7 @@ class Application {
      * @returns {any}
      */
     public callCommand(...args: any[]) {
-        return (this.call as any)(...args)
+        return (this.call as (...a: unknown[]) => unknown)(...args)
     }
 
     /**
@@ -234,7 +234,7 @@ class Application {
         this.$commands.push(command.$signature);
         let options = command.$options || [];
         let commandArguments = command.$arguments || [];
-        let cmd = (commander as any).command(command.$signature);
+        let cmd = program.command(command.$signature);
 
         cmd.description(command.$description);
 
@@ -266,10 +266,9 @@ class Application {
 
 
             let newCommand = Object.create(command);
-            command.input = new InputHandler(args, opts);
-            command.output = new OutputHandler();
+            newCommand.input = new InputHandler(args, opts);
+            newCommand.output = new OutputHandler();
             return newCommand.handle()
-
         })
     }
 }

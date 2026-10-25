@@ -1,3 +1,4 @@
+import { describe, test, expect, jest } from "@jest/globals";
 const _Command = require('../src/command');
 const Command = _Command.default || _Command;
 

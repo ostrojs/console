@@ -1,6 +1,7 @@
 import OutputFormatterStyle from '../outputFormatterStyle';
 import OutputInterface from '../outputInterface';
 import CollectionInterface from '@ostro/contracts/collection/collect';
+import type { ICollection } from '@ostro/contracts/collection/collect';
 import Table from '../helpers/table';
 import { isset } from '@ostro/support/function';
 
@@ -127,8 +128,8 @@ class Interaction {
     public table($headers: Record<string, any>, $rows: any, $tableStyle: string = 'default', $columnStyles: any[] = []) {
         let $table = new Table(this.output);
 
-        if ($rows instanceof CollectionInterface) {
-            $rows = ($rows as any).toArray();
+        if ($rows instanceof CollectionInterface || (typeof ($rows as ICollection)?.toArray === 'function')) {
+            $rows = ($rows as ICollection).toArray();
         }
 
         $table.setHeaders($headers).setRows($rows).setStyle($tableStyle);
