@@ -202,7 +202,7 @@ class GeneratorCommand extends Command {
             return super.isTypeScript();
         }
 
-        if (typeof this.$app.basePath !== 'function') {
+        if (!this.$app?.basePath) {
             return false;
         }
         try {

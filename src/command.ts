@@ -1,4 +1,5 @@
 import type { ICommand } from '@ostro/contracts/console/command';
+import type { IApplication } from '@ostro/contracts/foundation/application';
 
 import Argument from './argument';
 import Option from './option';
@@ -12,7 +13,7 @@ import CallCommands from './concerns/callsCommands';
  * Class Command.
  */
 class Command extends implement(CommandContracts, Interaction, CallCommands, HasParameters) implements ICommand {
-    public declare $app: any;
+    public declare $app: IApplication;
     public declare $console: any;
 
     public get $signature(): any {
@@ -63,7 +64,7 @@ class Command extends implement(CommandContracts, Interaction, CallCommands, Has
             }
         } catch (_) {}
 
-        if (typeof this.$app.basePath !== 'function') {
+        if (!this.$app?.basePath) {
             return false;
         }
         try {
